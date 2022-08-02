@@ -7,7 +7,7 @@ export default function Game() {
 
   return (
     <div className='container'>
-        <h1>Game</h1>
+        <h1 className="style.action">Game</h1>
     </div>
   )
 }

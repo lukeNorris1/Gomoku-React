@@ -1,5 +1,5 @@
 import { Route, Routes, } from "react-router-dom";
-import { UserProvider } from "./components";
+import { Header, UserProvider } from "./components";
 import { Home, Login, Game, GameHistory, GameHistoryDetails } from "./pages";
 
 import "./App.css";
@@ -8,6 +8,7 @@ function App() {
   return (
     <>
     <UserProvider>
+      <Header/>
         <main className="main">
           <Routes>
             <Route path="/" element={<Home />} />
