@@ -1,5 +1,5 @@
 import { Route, Routes, } from "react-router-dom";
-import { Header, UserProvider } from "./components";
+import { Header, UserProvider, BoardProvider } from "./components";
 import { Home, Login, Game, GameHistory, GameHistoryDetails } from "./pages";
 
 import "./App.css";
@@ -8,6 +8,7 @@ function App() {
   return (
     <>
     <UserProvider>
+      <BoardProvider>
       <Header/>
         <main className="main">
           <Routes>
@@ -18,6 +19,7 @@ function App() {
             <Route path="GameHistoryDetails" element={<GameHistoryDetails />} />
           </Routes>
         </main>
+        </BoardProvider>
     </UserProvider>
     </>
   );

@@ -7,6 +7,7 @@ import users from "../data/users.json"
 import style from './Login.module.css'
 
 export default function Login() {
+  console.log("load login")
   const { login} = useContext(UserContext)
   const usernameInput = useRef<HTMLInputElement | null>(null)
   const navigate = useNavigate()
