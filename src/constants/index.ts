@@ -1,0 +1,10 @@
+export enum TILE_STATUS {
+    AVAILABLE = 'AVAILABLE',
+    SELECTED = 'SELECTED',
+    OCCUPIED = 'OCCUPIED',
+  }
+
+export enum PLAYER_TURN {
+  BLACK = 'BLACK',
+  WHITE = 'WHITE,'
+}

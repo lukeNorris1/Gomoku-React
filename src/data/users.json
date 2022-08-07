@@ -2,5 +2,9 @@
     {
         "username": "lnorris",
         "password": "awp"
+    },
+    {
+        "username": "admin",
+        "password": "admin"
     }
 ]
