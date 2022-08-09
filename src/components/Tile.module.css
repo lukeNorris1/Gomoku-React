@@ -19,5 +19,13 @@
   .seat.selected {
     background-color: #16437E;
   }
+
+  .seat.black {
+    background-color: black;
+  }
+
+  .seat.white {
+    background-color: white;
+  }
   
  

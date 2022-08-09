@@ -1,14 +1,14 @@
-import React from "react"
-
-import style from './GameHistory.module.css'
+import style from "./GameHistory.module.css";
+import { useLocalStorage } from "../hooks";
+import { useContext } from "react";
 
 export default function GameHistory() {
-    console.log("gameHistory")
+  const [boards] = useLocalStorage<Record<string, number[]>>("boards", {});
+  console.log("gameHistory");
 
   return (
-    <div className='container'>
-        <h1>gameHistory</h1>
+    <div className="container">
+      <h1>You have {Object.keys(boards).map((key) => key)} bookings</h1>
     </div>
-  )
+  );
 }
-

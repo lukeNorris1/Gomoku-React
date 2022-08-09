@@ -20,7 +20,7 @@ export default function Home() {
     if (!user) navigate("/login");
     else {
       changeBoard(boardSize);
-      navigate("/game");
+      navigate(`/game`);
     }
   }
 
