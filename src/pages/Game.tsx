@@ -1,4 +1,4 @@
-import { useState, useContext, useReducer } from "react";
+import { useState, useContext, useReducer, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import style from "./Game.module.css";
 import { PLAYER_TURN } from "../constants";
@@ -17,6 +17,8 @@ function boardReducer(state: number[], action: BoardAction) {
   switch (type) {
     case BoardActionType.SELECT:
       return [...state, payload];
+    case BoardActionType.DESELECT:
+      return state.filter((seat) => seat !== payload);
     default:
       return state;
   }
@@ -29,24 +31,28 @@ export default function Game() {
   const { board } = useContext(BoardContext);
   const [player, setPlayer] = useState("Black");
   const [gameEnd, setGameEnd] = useState(false);
+  const [localBoardSize, setLocalBoardSize] = useState(15);
   const navigate = useNavigate();
 
   const [boards, saveBoards] = useLocalStorage<Record<string, number[]>>(
     `boards`,
     {}
   );
+
+  //USE REDUCER HOOK
   const { [`board-${boardId}`]: selectedBoard = [], ...otherBoards } = boards;
-
-  console.log(selectedBoard);
-
   const [state, dispatch] = useReducer(boardReducer, selectedBoard);
 
-  //if (!board?.boardSize) return <Navigate to="/" replace />;
-  const tempBoardSize = 15;
+  useEffect(() => {
+    return () => {
+      if (board?.boardSize) setLocalBoardSize(board.boardSize);
+    };
+  }, []);
 
-  const clickTest = () => {
-    saveBoards({ ...boards, [`board-1`]: state });
-    navigate("/GameHistory");
+  const restartClick = () => {
+    console.log(state);
+    // saveBoards({ ...boards, [`board-1`]: state });
+    // navigate("/GameHistory");
   };
 
   const togglePlayer = () => {
@@ -64,12 +70,9 @@ export default function Game() {
         <div
           className={style.seats}
           onClick={togglePlayer}
-          style={{ gridTemplateColumns: `repeat(${tempBoardSize}, 1fr)` }}
+          style={{ gridTemplateColumns: `repeat(${localBoardSize}, 1fr)` }}
         >
-          {/* {[...Array(board?.boardSize * board?.boardSize)].map((_, index) => (
-            <Tile key={`seat-${index}`} id={index} isSelected={false} />
-          ))} */}
-          {[...Array(tempBoardSize * tempBoardSize)].map((_, index) => (
+          {[...Array(localBoardSize * localBoardSize)].map((_, index) => (
             <Tile
               key={`seat-${index}`}
               id={index}
@@ -81,13 +84,14 @@ export default function Game() {
         </div>
       </div>
       <div className={style.navigation}>
-        <button className={style.navText} onClick={clickTest}>
+        <button className={style.navText} onClick={restartClick}>
           Restart
         </button>
         <button className={style.navText} onClick={gameFinishCheck}>
           Leave
         </button>
       </div>
+      <Button onClick={togglePlayer}>Toggle</Button>
     </div>
   );
 }

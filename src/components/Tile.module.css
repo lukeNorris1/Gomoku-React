@@ -1,4 +1,4 @@
-.seat {
+.tile {
   height: 2rem;
   width: 2rem;
   border: 1px solid #b1b2b2;
@@ -9,22 +9,23 @@
   box-sizing: border-box;
   background-color: #b1b2b2;
   cursor: pointer;
+  text-align: center;
   }
   
-  .seat.occupied {
+  .tile.occupied {
     background-color: rgba(0, 0, 0, .08);
     cursor: not-allowed;
   }
   
-  .seat.selected {
+  .tile.selected {
     background-color: #16437E;
   }
 
-  .seat.black {
+  .tile.black {
     background-color: black;
   }
 
-  .seat.white {
+  .tile.white {
     background-color: white;
   }
   
