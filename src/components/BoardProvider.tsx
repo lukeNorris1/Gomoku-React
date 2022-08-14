@@ -6,7 +6,7 @@ type BoardProviderProps = {
   children: React.ReactNode
 }
 
-export default function UserProvider({ children }: BoardProviderProps) {
+export default function BoardProvider({ children }: BoardProviderProps) {
   const [board, setBoard] = useState<Board | undefined>(undefined)
 
   const changeBoard = (boardSize: number) => setBoard({ boardSize })

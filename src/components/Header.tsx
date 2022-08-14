@@ -1,43 +1,46 @@
-import React from 'react'
+import React from "react";
 
-import { useContext } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { UserContext } from '../context'
+import { useContext } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { UserContext } from "../context";
 
-import style from './Header.module.css'
+import style from "./Header.module.css";
 
 export default function Header() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { user, logout } = useContext(UserContext)
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useContext(UserContext);
 
   const getActions = () => {
-    if (user) {
+    if (!user) {
+      return location.pathname === "/" ? (
+        <>
+          <button className={style.action} onClick={() => navigate("login")}>
+            Login
+          </button>
+          <button
+            className={style.action}
+            onClick={() => navigate("gameHistory")}
+          >
+            Previous Games
+          </button>
+        </>
+      ) : (
+        <></>
+      );
+    } else if (location.pathname === "/") {
       return (
         <>
           <button
             className={style.action}
-            onClick={() => {
-              logout()
-              navigate('/')
-            }}
+            onClick={() => navigate("gameHistory")}
           >
-            Logout
+            Previous Games
           </button>
         </>
-      )
-    } else {
-      return location.pathname !== '/login' ? (
-        <button className={style.action} onClick={() => navigate('login')}>
-          Login
-        </button>
-      ) : (
-        <button className={style.action} onClick={() => navigate('sign-up')}>
-          Sign Up
-        </button>
-      )
+      );
     }
-  }
+  };
 
   return (
     <header className={style.header}>
@@ -46,5 +49,5 @@ export default function Header() {
         <div className={style.actions}>{getActions()}</div>
       </div>
     </header>
-  )
+  );
 }

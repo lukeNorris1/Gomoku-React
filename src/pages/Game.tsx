@@ -1,8 +1,12 @@
 import { useState, useContext, useReducer, useEffect } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  useNavigate,
+  useParams,
+  useLocation,
+} from "react-router-dom";
 import style from "./Game.module.css";
-import { PLAYER_TURN } from "../constants";
-import { BoardContext } from "../context";
+import { BoardContext, UserContext } from "../context";
 import { Button, Tile } from "../components";
 import { useLocalStorage } from "../hooks";
 import { BoardActionType } from "../constants";
@@ -27,10 +31,12 @@ function boardReducer(state: number[], action: BoardAction) {
 export default function Game() {
   console.log("load game");
 
-  const { boardId } = useParams();
   const { board } = useContext(BoardContext);
   const [player, setPlayer] = useState("Black");
+  const { user } = useContext(UserContext);
+  const [boardAddition, setBoardAddition] = useState(1);
   const [gameEnd, setGameEnd] = useState(false);
+  const [winnerBoard, setWinnerBoard] = useState<any[]>([]);
   const [localBoardSize, setLocalBoardSize] = useState(15);
   const navigate = useNavigate();
 
@@ -39,29 +45,48 @@ export default function Game() {
     {}
   );
 
-  //USE REDUCER HOOK
-  const { [`board-${boardId}`]: selectedBoard = [], ...otherBoards } = boards;
-  const [state, dispatch] = useReducer(boardReducer, selectedBoard);
+  //ToDo CANT GET WINNERS LIST AND BOARD LIST TO BE ADDED AT THE SAME TIME - TRY USEFFECT HOOK????
 
+  const { [`board-${boardAddition}`]: selectedTiles = [], ...otherBoards } =
+    boards;
+    
+  const [state, dispatch] = useReducer(boardReducer, selectedTiles);
+  
   useEffect(() => {
     return () => {
+      setBoardAddition(Object.keys(boards).length);
+
       if (board?.boardSize) setLocalBoardSize(board.boardSize);
     };
   }, []);
 
   const restartClick = () => {
-    console.log(state);
-    // saveBoards({ ...boards, [`board-1`]: state });
-    // navigate("/GameHistory");
+    saveBoards(otherBoards);
+    // navigate(`/GameHistory/${localBoardSize}`);
   };
+
+  function goNext() {
+    setWinnerBoard((winnerBoard) => [...winnerBoard, [1]]);
+    console.log(`Winner: ${winnerBoard}`);
+    saveBoards({ ...boards, [`winners`]: winnerBoard });
+    //saveBoards({...boards,[`board-${boardAddition}`]: state});
+    navigate("/gameHistory");
+  }
 
   const togglePlayer = () => {
     player === "Black" ? setPlayer("White") : setPlayer("Black");
+    saveBoards({
+      ...boards,
+      [`board-${boardAddition}`]: state,
+    });
   };
 
   function gameFinishCheck() {
+    //After win condition is met change //boardWinner('Black')
     !gameEnd ? navigate("/") : navigate("/GameHistory");
   }
+
+  if (!user) return <Navigate to="/" replace />;
 
   return (
     <div className={style.container}>
@@ -76,7 +101,7 @@ export default function Game() {
             <Tile
               key={`seat-${index}`}
               id={index}
-              isSelected={selectedBoard.includes(index)}
+              isSelected={selectedTiles.includes(index)}
               dispatch={dispatch}
               player={player}
             />
@@ -91,7 +116,7 @@ export default function Game() {
           Leave
         </button>
       </div>
-      <Button onClick={togglePlayer}>Toggle</Button>
+      <Button onClick={goNext}>GoTO</Button>
     </div>
   );
 }

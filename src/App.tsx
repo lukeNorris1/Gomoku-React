@@ -16,10 +16,7 @@ function App() {
               <Route path="Login" element={<Login />} />
               <Route path="Game/" element={<Game />} />
               <Route path="GameHistory" element={<GameHistory />} />
-              <Route
-                path="GameHistoryDetails"
-                element={<GameHistoryDetails />}
-              />
+              <Route path="game-log:boardId" element={<GameHistoryDetails />} />
             </Routes>
           </main>
         </BoardProvider>

@@ -1,3 +1,3 @@
 export type Board = {
-    boardSize: number
-  }
+  boardSize: number;
+};

@@ -1,6 +1,7 @@
 import { useState, memo } from "react";
 import { BoardActionType, TILE_STATUS } from "../constants";
 import { BoardAction } from "../types";
+import { useLocalStorage } from "../hooks";
 
 import style from "./Tile.module.css";
 
@@ -12,39 +13,41 @@ type TileProps = {
   text?: string;
 };
 
-const getClassNames = (status: TILE_STATUS) => {
+const getClassNames = (status: TILE_STATUS, player: string) => {
   const className = style.tile;
   switch (status) {
-    case TILE_STATUS.AVAILABLE:
-      return `${className} ${style.available}`;
     case TILE_STATUS.SELECTED:
-      return `${className} ${style.selected}`;
+      return `${className} ${style.black}`;
     case TILE_STATUS.BLACK:
       return `${className} ${style.black}`;
     case TILE_STATUS.WHITE:
       return `${className} ${style.white}`;
     default:
-      return className;
+      return `${className} ${style.available}`;
   }
 };
 
 export default memo(function Tile(props: TileProps) {
   const { id, isSelected = false, player, text, dispatch } = props;
-  const [status, setStatus] = useState(TILE_STATUS.AVAILABLE);
+  const [status, setStatus] = useState(
+    isSelected ? TILE_STATUS.SELECTED : TILE_STATUS.AVAILABLE
+  );
 
   const handleClick = () => {
     console.log(player);
-    if (status === TILE_STATUS.AVAILABLE && player === "Black") {
-      setStatus(TILE_STATUS.BLACK);
-      dispatch({ type: BoardActionType.SELECT, payload: id });
-    } else if (status === TILE_STATUS.AVAILABLE && player === "White") {
-      setStatus(TILE_STATUS.WHITE);
-      dispatch({ type: BoardActionType.SELECT, payload: id });
+    if (!isSelected) {
+      if (status === TILE_STATUS.AVAILABLE && player === "Black") {
+        setStatus(TILE_STATUS.BLACK);
+        dispatch({ type: BoardActionType.SELECT, payload: id });
+      } else if (status === TILE_STATUS.AVAILABLE && player === "White") {
+        setStatus(TILE_STATUS.WHITE);
+        dispatch({ type: BoardActionType.SELECT, payload: id });
+      }
     }
   };
 
   return (
-    <div className={getClassNames(status)} onClick={handleClick}>
+    <div className={getClassNames(status, player)} onClick={handleClick}>
       {text}
     </div>
   );
