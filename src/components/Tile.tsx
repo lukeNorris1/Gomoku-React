@@ -1,7 +1,6 @@
 import { useState, memo } from "react";
 import { BoardActionType, TILE_STATUS } from "../constants";
 import { BoardAction } from "../types";
-import { useLocalStorage } from "../hooks";
 
 import style from "./Tile.module.css";
 
@@ -9,15 +8,13 @@ type TileProps = {
   id: number;
   isSelected?: boolean;
   dispatch: React.Dispatch<BoardAction>;
-  player: string;
+  player?: string;
   text?: string;
 };
 
-const getClassNames = (status: TILE_STATUS, player: string) => {
+const getClassNames = (status: TILE_STATUS) => {
   const className = style.tile;
   switch (status) {
-    case TILE_STATUS.SELECTED:
-      return `${className} ${style.black}`;
     case TILE_STATUS.BLACK:
       return `${className} ${style.black}`;
     case TILE_STATUS.WHITE:
@@ -28,10 +25,13 @@ const getClassNames = (status: TILE_STATUS, player: string) => {
 };
 
 export default memo(function Tile(props: TileProps) {
-  const { id, isSelected = false, player, text, dispatch } = props;
+  const { id, isSelected = false, player, text, dispatch} = props;
   const [status, setStatus] = useState(
     isSelected ? TILE_STATUS.SELECTED : TILE_STATUS.AVAILABLE
   );
+
+
+  
 
   const handleClick = () => {
     console.log(player);
@@ -47,7 +47,7 @@ export default memo(function Tile(props: TileProps) {
   };
 
   return (
-    <div className={getClassNames(status, player)} onClick={handleClick}>
+    <div className={getClassNames(status)} onClick={handleClick}>
       {text}
     </div>
   );

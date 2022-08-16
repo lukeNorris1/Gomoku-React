@@ -13,4 +13,8 @@ export enum PLAYER_TURN {
 export enum BoardActionType {
   SELECT = "SELECT",
   DESELECT = "DESELECT",
+  SIZE  = "SIZE",
+  DATE = "DATE",
+  WINNER = "WINNER",
+  EMPTY = "EMPTY"
 }

@@ -1,32 +1,24 @@
-import style from "./GameHistory.module.css";
 import { useLocalStorage } from "../hooks";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { boardInfo } from "../types";
+import style from "./GameHistory.module.css";
 
 export default function GameHistory() {
   const navigate = useNavigate();
-  const [boards] = useLocalStorage<Record<string, number[]>>("boards", {});
-
-  const currentDate = new Date();
-  const dateFormatted = `
-    ${currentDate.getDate()}/
-    ${currentDate.getMonth() + 1}/
-    ${currentDate.getFullYear()}`.replace(/\s/g, "");
+  const [boards] = useLocalStorage<Record<string, boardInfo>>("boards", {});
 
   return (
     <div className={style.container}>
       {Object.keys(boards).map((key, arr) => {
-        console.log(`number: ${arr}`)
-        if (key != "winners") {
+        const { size, date, winner, moves} = boards[key]
           const sessionId = key.split("-")[1];
-          const tileAmount = boards[key].length;
-          if (tileAmount === 0) return null;
+          if (size === 0) return null;
 
           return (
             <div className={style.list} key={key}>
               <p className={style.title}>
                 {`Game #${sessionId.replace(/\s/g, "")}
-               @${dateFormatted}`}
+               @ ${date}  - Winner is ${winner}`}
               </p>
               <button
                 className={style.button}
@@ -36,8 +28,8 @@ export default function GameHistory() {
               </button>
             </div>
           );
-        }
-      })}
+      }
+      )}
     </div>
   );
 }

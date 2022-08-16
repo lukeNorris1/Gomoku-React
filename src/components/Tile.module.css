@@ -16,10 +16,6 @@
     background-color: rgba(0, 0, 0, .08);
     cursor: not-allowed;
   }
-  
-  .tile.selected {
-    background-color: #16437E;
-  }
 
   .tile.black {
     background-color: black;

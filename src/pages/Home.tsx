@@ -10,7 +10,7 @@ export default function Home() {
   console.log("load Home");
   const { user } = useContext(UserContext);
   const { changeBoard } = useContext(BoardContext);
-  const [boardSize, setBoardSize] = useState(1);
+  const [boardSize, setBoardSize] = useState(5);
   const navigate = useNavigate();
   console.log(`user: ${user?.username}`);
 
@@ -28,11 +28,13 @@ export default function Home() {
     <div className={style.container}>
       <select
         className={style.dropdown}
-        onChange={(e) => setBoardSize(parseInt(e.currentTarget.value, 10))}
+        onChange={(e) => {
+          setBoardSize(parseInt(e.currentTarget.value, 10))}
+        }
       >
         {[...Array(15)].map((_, index) => (
-          <option key={index + 1} value={index + 1}>{` ${index + 1} x ${
-            index + 1
+          <option key={index + 5} value={index + 5}>{` ${index + 5} x ${
+            index + 5
           }`}</option>
         ))}
       </select>
