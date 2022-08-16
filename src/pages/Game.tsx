@@ -50,7 +50,6 @@ const getDate: () => string = () => {
 }
 
 export default function Game() {
-  console.log("load game");
 
   const { board } = useContext(BoardContext);
   const [player, setPlayer] = useState("Black");
@@ -70,24 +69,19 @@ export default function Game() {
   const [state, dispatch] = useReducer(boardReducer, currentBoard);
 
   useEffect(() => {
-    return () => {
       setBoardAddition(Object.keys(boards).length);
-
       if (board?.boardSize) {
         setLocalBoardSize(board.boardSize);
         dispatch({ type: BoardActionType.SIZE, payload: board.boardSize })
       }
       dispatch({ type: BoardActionType.DATE, payload: getDate() })
-    };
+
   }, []);
 
   useEffect(() => {
     gameFinishCheck()
   }, [state]);
 
-  useEffect(() => {
-    setPlayerMessage(`Current Player: ${player}`)
-  }, [player])
 
   //! Currently not working properly
   const restartClick = () => {
@@ -111,123 +105,160 @@ export default function Game() {
   }
 
   function gameFinishCheck() {
-    if (state.moves.length < 9) return
+    //if (state.moves.length < 9) return
     const base = state.moves[state.moves.length - 1]
 
-    if (checkHorizontal(base) || 
-      checkVertical(base) || 
-      checkDiagonalTopLeftBottomRight(base) || 
-      checkDiagonalBottomLeftTopRight(base)){
-        setGameEnd(true)
-        setPlayer('')
-        togglePlayer()
-        if (state.moves.length % 2 == 1){
-          dispatch({ type: BoardActionType.WINNER, payload: 'Black' })
-        }
-        else {
-          dispatch({ type: BoardActionType.WINNER, payload: 'White' })
-        }
-      }
+    // if (checkHorizontal(base) || 
+    //   checkVertical(base) || 
+    //   checkDiagonalTopLeftBottomRight(base) || 
+    //   checkDiagonalBottomLeftTopRight(base)){
+    //     setGameEnd(true)
+    //     setPlayer('')
+    //     togglePlayer()
+    //     if (state.moves.length % 2 == 1){
+    //       dispatch({ type: BoardActionType.WINNER, payload: 'Black' })
+    //     }
+    //     else {
+    //       dispatch({ type: BoardActionType.WINNER, payload: 'White' })
+    //     }
+    //   }
+
+    //checkHorizontal(base)
+    //checkVertical(base)
+    if (checkDiagonalTopLeftBottomRight(base) || checkDiagonalBottomLeftTopRight(base)) console.log('Winner')
   }
 
   function checkHorizontal(baseCase: number){
+    if (!baseCase) return
     var counter = 1
-    var tileIterator = 1
-    for (var i = 1; i < 5; i++){
-      if ((indexOfTile(baseCase) % 2 === 1) === (indexOfTile(baseCase - tileIterator) % 2 === 1)){
-        if (indexOfTile(baseCase - tileIterator) !== -1 && state.moves.includes(baseCase - tileIterator)){
-          counter++
-          tileIterator -= 1
+    var iterator = 1
+    for (var i:number = 1; i < 5; i++){
+      if (state.moves.includes(baseCase - iterator)){
+        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase - iterator) % 2 === 0)){
+          counter += 1
+          iterator += 1
         }
       } else break
     }
-    tileIterator = 1
-    for (var i = 1; i < 5; i++){
-      if ((indexOfTile(baseCase) % 2 === 1) === (indexOfTile(baseCase + tileIterator) % 2 === 1)){
-        if (indexOfTile(baseCase + tileIterator) !== -1 && state.moves.includes(baseCase + tileIterator)){
-          counter++
-          tileIterator += 1
+    iterator = 1
+    for (var i:number = 1; i < 5; i++){
+      if (state.moves.includes(baseCase + iterator)){
+        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase + iterator) % 2 === 0)){
+          counter += 1
+          iterator += 1
         }
       } else break
     }
-    return counter >= 5
+    console.log(`Counter: ${counter}`)
   }
 
   function checkVertical(baseCase: number){
+    if (!baseCase) return
+    const tileDifference = state.size
     var counter = 1
-    var tileIterator = state.size
-    for (var i = 1; i < 5; i++){
-      if ((indexOfTile(baseCase) % 2 === 1) === (indexOfTile(baseCase - tileIterator) % 2 === 1)){
-        if (indexOfTile(baseCase - tileIterator) !== -1 && state.moves.includes(baseCase - tileIterator)){
-          counter++
-          tileIterator -= state.size
+    var iterator = tileDifference
+    console.log(`Start Vertical Check`)
+    for (var i:number = 1; i < 5; i++){
+      console.log(`Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator}`)
+      if (state.moves.includes(baseCase - iterator)){
+        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase - iterator) % 2 === 0)){
+          counter += 1
+          console.log(`111111Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator} `)
+          iterator += tileDifference
         }
       } else break
+      
     }
-    tileIterator = state.size
-    for (var i = 1; i < 5; i++){
-      if ((indexOfTile(baseCase) % 2 === 1) === (indexOfTile(baseCase + tileIterator) % 2 === 1)){
-        if (indexOfTile(baseCase + tileIterator) !== -1 && state.moves.includes(baseCase + tileIterator)){
-          counter++
-          tileIterator += state.size
+    iterator = tileDifference
+    for (var i:number = 1; i < 5; i++){
+      console.log(`VertBase: ${baseCase}, Compared-${iterator}: ${baseCase + iterator}`)
+      if (state.moves.includes(baseCase + iterator)){
+        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase + iterator) % 2 === 0)){
+          counter += 1
+          console.log(`Vert 111111Base: ${baseCase}, Compared-${iterator}: ${baseCase + iterator} `)
+          iterator += tileDifference
         }
       } else break
+      
     }
-    return counter >= 5
+    console.log(`Counter: ${counter}`)
   }
 
   function checkDiagonalTopLeftBottomRight(baseCase: number){
+    if (!baseCase) return
+    const tileDifference = state.size + 1
     var counter = 1
-    var tileIterator = state.size + 1
-    for (var i = 1; i < 5; i++){
-      if ((indexOfTile(baseCase) % 2 === 1) === (indexOfTile(baseCase - tileIterator) % 2 === 1)){
-        if (indexOfTile(baseCase - tileIterator) !== -1 && state.moves.includes(baseCase - tileIterator)){
-          counter++
-          tileIterator += state.size + 1
+    var iterator = tileDifference
+    console.log(`Start Vertical Check`)
+    for (var i:number = 1; i < 5; i++){
+      console.log(`Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator}`)
+      if (state.moves.includes(baseCase - iterator)){
+        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase - iterator) % 2 === 0)){
+          counter += 1
+          console.log(`111111Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator} `)
+          iterator += tileDifference
         }
       } else break
+      
     }
-    tileIterator = state.size + 1
-    for (var j = 1; j < 5; j++){
-      if ((indexOfTile(baseCase) % 2 == 1) === (indexOfTile(baseCase + tileIterator) % 2 === 1)){
-        if (indexOfTile(baseCase + tileIterator) !== -1 && state.moves.includes(baseCase + tileIterator)){
-          counter++
-          tileIterator += state.size + 1
+    iterator = tileDifference
+    for (var i:number = 1; i < 5; i++){
+      console.log(`VertBase: ${baseCase}, Compared-${iterator}: ${baseCase + iterator}`)
+      if (state.moves.includes(baseCase + iterator)){
+        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase + iterator) % 2 === 0)){
+          counter += 1
+          console.log(`Vert 111111Base: ${baseCase}, Compared-${iterator}: ${baseCase + iterator} `)
+          iterator += tileDifference
         }
       } else break
+      
     }
-    return counter >= 5
+    console.log(`Counter: ${counter}`)
+    if (counter >= 5) return true
   }
-
   function checkDiagonalBottomLeftTopRight(baseCase: number){
+    if (!baseCase) return
+    const tileDifference = state.size - 1
     var counter = 1
-    var tileIterator = state.size - 1
-    for (var i = 1; i < 5; i++){
-      if ((indexOfTile(baseCase) % 2 === 1) === (indexOfTile(baseCase - tileIterator) % 2 === 1)){
-        if (indexOfTile(baseCase - tileIterator) !== -1 && state.moves.includes(baseCase - tileIterator)){
-          counter++
-          tileIterator += state.size - 1
+    var iterator = tileDifference
+    console.log(`Start Vertical Check`)
+    for (var i:number = 1; i < 5; i++){
+      console.log(`Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator}`)
+      if (state.moves.includes(baseCase - iterator)){
+        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase - iterator) % 2 === 0)){
+          counter += 1
+          console.log(`111111Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator} `)
+          iterator += tileDifference
         }
       } else break
+      
     }
-    tileIterator = state.size - 1
-    for (var j = 1; j < 5; j++){
-      if ((indexOfTile(baseCase) % 2 == 1) === (indexOfTile(baseCase + tileIterator) % 2 === 1)){
-        if (indexOfTile(baseCase + tileIterator) !== -1 && state.moves.includes(baseCase + tileIterator)){
-          counter++
-          tileIterator += state.size - 1
+    iterator = tileDifference
+    for (var i:number = 1; i < 5; i++){
+      console.log(`VertBase: ${baseCase}, Compared-${iterator}: ${baseCase + iterator}`)
+      if (state.moves.includes(baseCase + iterator)){
+        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase + iterator) % 2 === 0)){
+          counter += 1
+          console.log(`Vert 111111Base: ${baseCase}, Compared-${iterator}: ${baseCase + iterator} `)
+          iterator += tileDifference
         }
       } else break
+      
     }
-    return counter >= 5
+    console.log(`Counter: ${counter}`)
+    if (counter >= 5) return true
   }
 
   const togglePlayer = () => {
+    
+    setPlayerMessage(`Current Player: ${player}`)
     if (!gameEnd) {
       player === "Black" ? setPlayer("White") : setPlayer("Black");
-    } else if (state.moves.length == (state.size * state.size)){
+    } 
+    else if (state.moves.length == (state.size * state.size)){
       setPlayerMessage('Draw')
-    } else setPlayerMessage(`Winner: ${state.winner}`)
+    } 
+    else setPlayerMessage(`Winner: ${state.winner}`)
   };
 
 
