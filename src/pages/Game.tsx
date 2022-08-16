@@ -85,6 +85,10 @@ export default function Game() {
     gameFinishCheck()
   }, [state]);
 
+  useEffect(() => {
+    setPlayerMessage(`Current Player: ${player}`)
+  }, [player])
+
   //! Currently not working properly
   const restartClick = () => {
     saveBoards(otherBoards);
@@ -221,7 +225,6 @@ export default function Game() {
   const togglePlayer = () => {
     if (!gameEnd) {
       player === "Black" ? setPlayer("White") : setPlayer("Black");
-      setPlayerMessage(`Current Player: ${player}`)
     } else if (state.moves.length == (state.size * state.size)){
       setPlayerMessage('Draw')
     } else setPlayerMessage(`Winner: ${state.winner}`)
