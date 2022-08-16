@@ -1,7 +1,7 @@
 import { useState, useContext, useReducer, useEffect } from "react";
-import {Navigate, useNavigate, useLocation } from "react-router-dom";
+import {Navigate, useNavigate } from "react-router-dom";
 import { BoardContext, UserContext } from "../context";
-import { Button, Tile } from "../components";
+import { Tile } from "../components";
 import { useLocalStorage } from "../hooks";
 import { BoardActionType } from "../constants";
 import { boardInfo } from "../types";
@@ -19,21 +19,13 @@ function boardReducer(state: boardInfo, action: BoardAction) {
   const { type, payload } = action;
   switch (type) {
     case BoardActionType.SELECT:
-      return {
-        size: size, date: date, winner: winner, moves: [...moves, payload]
-      }
+      return { size: size, date: date, winner: winner, moves: [...moves, payload]}
     case BoardActionType.SIZE:
-      return {
-        size: payload, date: date, winner: winner, moves: moves
-      }
+      return { size: payload, date: date, winner: winner, moves: moves}
     case BoardActionType.DATE:
-      return {
-        size: size, date: payload, winner: winner, moves: moves
-      }
+      return { size: size, date: payload, winner: winner, moves: moves}
     case BoardActionType.WINNER:
-      return {
-        size: size, date: date, winner: payload, moves: moves
-      }
+      return { size: size, date: date, winner: payload, moves: moves}
     case BoardActionType.DESELECT:
       return {size: size, date: date, winner: payload, moves: moves.filter((seat) => seat !== payload)}
     default:
@@ -75,12 +67,17 @@ export default function Game() {
         dispatch({ type: BoardActionType.SIZE, payload: board.boardSize })
       }
       dispatch({ type: BoardActionType.DATE, payload: getDate() })
-
   }, []);
 
   useEffect(() => {
     gameFinishCheck()
-  }, [state]);
+  }, [state.moves]);
+
+  useEffect(() => {
+    if (player !== '')setPlayerMessage(`Current Player: ${player}`)
+    else {setPlayerMessage(`Winner: ${state.winner}`)}
+  }, [player]);
+
 
 
   //! Currently not working properly
@@ -94,10 +91,7 @@ export default function Game() {
       saveBoards({ ...boards, [`board-${boardAddition}`]: state });
       navigate("/gameHistory");
     }
-    else {
-      navigate("/");
-    }
-    
+    else navigate("/");
   }
 
   function indexOfTile(value: number){
@@ -105,160 +99,59 @@ export default function Game() {
   }
 
   function gameFinishCheck() {
-    //if (state.moves.length < 9) return
+    if (state.moves.length < 9) return
     const base = state.moves[state.moves.length - 1]
-
-    // if (checkHorizontal(base) || 
-    //   checkVertical(base) || 
-    //   checkDiagonalTopLeftBottomRight(base) || 
-    //   checkDiagonalBottomLeftTopRight(base)){
-    //     setGameEnd(true)
-    //     setPlayer('')
-    //     togglePlayer()
-    //     if (state.moves.length % 2 == 1){
-    //       dispatch({ type: BoardActionType.WINNER, payload: 'Black' })
-    //     }
-    //     else {
-    //       dispatch({ type: BoardActionType.WINNER, payload: 'White' })
-    //     }
-    //   }
-
-    //checkHorizontal(base)
-    //checkVertical(base)
-    if (checkDiagonalTopLeftBottomRight(base) || checkDiagonalBottomLeftTopRight(base)) console.log('Winner')
+    if (checkWinBlock(base, 1) || checkWinBlock(base, state.size) || checkWinBlock(base, state.size + 1) || checkWinBlock(base, state.size - 1)) {
+      setGameEnd(true)
+      if (player == 'White'){
+        dispatch({ type: BoardActionType.WINNER, payload: 'Black' })
+      } else {
+        dispatch({ type: BoardActionType.WINNER, payload: 'White' })
+      }
+      setPlayer('')
+    }
+    if (state.moves.length == (state.size * state.size)){
+      setGameEnd(true)
+      setPlayerMessage('Draw')
+      dispatch({ type: BoardActionType.WINNER, payload: 'Draw' })
+      setPlayer('')
+    }
   }
 
-  function checkHorizontal(baseCase: number){
+  function checkWinBlock(baseCase: number, tileDiff: number){
     if (!baseCase) return
+    var winnerArray:number[] = []
     var counter = 1
-    var iterator = 1
+    var iterator = tileDiff
     for (var i:number = 1; i < 5; i++){
       if (state.moves.includes(baseCase - iterator)){
         if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase - iterator) % 2 === 0)){
           counter += 1
-          iterator += 1
+          iterator += tileDiff
+          winnerArray.push(baseCase - iterator)
         }
       } else break
     }
-    iterator = 1
+    iterator = tileDiff
     for (var i:number = 1; i < 5; i++){
       if (state.moves.includes(baseCase + iterator)){
         if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase + iterator) % 2 === 0)){
           counter += 1
-          iterator += 1
+          iterator += tileDiff
+          winnerArray.push(baseCase + iterator)
         }
       } else break
     }
-    console.log(`Counter: ${counter}`)
-  }
-
-  function checkVertical(baseCase: number){
-    if (!baseCase) return
-    const tileDifference = state.size
-    var counter = 1
-    var iterator = tileDifference
-    console.log(`Start Vertical Check`)
-    for (var i:number = 1; i < 5; i++){
-      console.log(`Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator}`)
-      if (state.moves.includes(baseCase - iterator)){
-        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase - iterator) % 2 === 0)){
-          counter += 1
-          console.log(`111111Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator} `)
-          iterator += tileDifference
-        }
-      } else break
-      
+    if (counter >= 5) {
+      console.log(winnerArray)
+      return true
     }
-    iterator = tileDifference
-    for (var i:number = 1; i < 5; i++){
-      console.log(`VertBase: ${baseCase}, Compared-${iterator}: ${baseCase + iterator}`)
-      if (state.moves.includes(baseCase + iterator)){
-        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase + iterator) % 2 === 0)){
-          counter += 1
-          console.log(`Vert 111111Base: ${baseCase}, Compared-${iterator}: ${baseCase + iterator} `)
-          iterator += tileDifference
-        }
-      } else break
-      
-    }
-    console.log(`Counter: ${counter}`)
-  }
-
-  function checkDiagonalTopLeftBottomRight(baseCase: number){
-    if (!baseCase) return
-    const tileDifference = state.size + 1
-    var counter = 1
-    var iterator = tileDifference
-    console.log(`Start Vertical Check`)
-    for (var i:number = 1; i < 5; i++){
-      console.log(`Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator}`)
-      if (state.moves.includes(baseCase - iterator)){
-        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase - iterator) % 2 === 0)){
-          counter += 1
-          console.log(`111111Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator} `)
-          iterator += tileDifference
-        }
-      } else break
-      
-    }
-    iterator = tileDifference
-    for (var i:number = 1; i < 5; i++){
-      console.log(`VertBase: ${baseCase}, Compared-${iterator}: ${baseCase + iterator}`)
-      if (state.moves.includes(baseCase + iterator)){
-        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase + iterator) % 2 === 0)){
-          counter += 1
-          console.log(`Vert 111111Base: ${baseCase}, Compared-${iterator}: ${baseCase + iterator} `)
-          iterator += tileDifference
-        }
-      } else break
-      
-    }
-    console.log(`Counter: ${counter}`)
-    if (counter >= 5) return true
-  }
-  function checkDiagonalBottomLeftTopRight(baseCase: number){
-    if (!baseCase) return
-    const tileDifference = state.size - 1
-    var counter = 1
-    var iterator = tileDifference
-    console.log(`Start Vertical Check`)
-    for (var i:number = 1; i < 5; i++){
-      console.log(`Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator}`)
-      if (state.moves.includes(baseCase - iterator)){
-        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase - iterator) % 2 === 0)){
-          counter += 1
-          console.log(`111111Base: ${baseCase}, Compared-${iterator}: ${baseCase - iterator} `)
-          iterator += tileDifference
-        }
-      } else break
-      
-    }
-    iterator = tileDifference
-    for (var i:number = 1; i < 5; i++){
-      console.log(`VertBase: ${baseCase}, Compared-${iterator}: ${baseCase + iterator}`)
-      if (state.moves.includes(baseCase + iterator)){
-        if ((indexOfTile(baseCase) % 2 === 0) === (indexOfTile(baseCase + iterator) % 2 === 0)){
-          counter += 1
-          console.log(`Vert 111111Base: ${baseCase}, Compared-${iterator}: ${baseCase + iterator} `)
-          iterator += tileDifference
-        }
-      } else break
-      
-    }
-    console.log(`Counter: ${counter}`)
-    if (counter >= 5) return true
   }
 
   const togglePlayer = () => {
+    if (!gameEnd) player === "Black" ? setPlayer("White") : setPlayer("Black");
+    console.log(`Moves Length: ${state.moves.length}, state size: ${state.size * state.size}`)
     
-    setPlayerMessage(`Current Player: ${player}`)
-    if (!gameEnd) {
-      player === "Black" ? setPlayer("White") : setPlayer("Black");
-    } 
-    else if (state.moves.length == (state.size * state.size)){
-      setPlayerMessage('Draw')
-    } 
-    else setPlayerMessage(`Winner: ${state.winner}`)
   };
 
 
