@@ -2,22 +2,16 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext, BoardContext } from "../context";
 import { Button, DisplayTile } from "../components";
-import { useLocalStorage } from "../hooks";
-import { boardInfo } from "../types";
 import style from "./Home.module.css";
 
 export default function Home() {
+  console.log("load Home");
   const { user } = useContext(UserContext);
   const { changeBoard } = useContext(BoardContext);
   const [boardSize, setBoardSize] = useState(5);
   const navigate = useNavigate();
   
-  const [boards] = useLocalStorage<Record<string, boardInfo>>(`boards`, {});
 
-  
-  const randomBoard = Object.keys(boards).at(getRandomArbitrary(1,Object.keys(boards).length))
-  const { size, moves} = boards[`${randomBoard}`]
-  const tempSize = size || 12
 
   function startPress() {
     if (!user) navigate("/login");
@@ -27,36 +21,35 @@ export default function Home() {
     }
   }
 
-  function getRandomArbitrary(min:number, max:number) {
-    return Math.random() * (max - min) + min;
-}
+  const moves = [1,2,10,15,24,17,5,13,9,21]
 
-function tileColor(index: number){
-  const tileIndex = moves.indexOf(index)
-  if (moves.includes(index) && tileIndex % 2 === 1) return 'White'
-  else return 'Black' 
-}
-
-const boardDiv = 
-<>
-  <div className={style.boardTitle}>{`Board: ${randomBoard}`}</div>
-  <div className={style.board}>
-    <div
-      className={style.tiles}
-      style={{ gridTemplateColumns: `repeat(${tempSize}, 1fr)` }}
-    >
-      {[...Array(tempSize  * tempSize)].map((key, index) => (
-        <DisplayTile
-          key={`tile-${index}`}
-          id={index}
-          isSelected={moves.includes(index)}
-          player={tileColor(index)}
-          text={moves.indexOf(index)}
-        />
-      ))}
+  function findPlayer(index:number){
+    if (moves.indexOf(index) % 2 == 1) return 'White'
+    else return 'Black'
+  
+  }
+  
+  const boardDiv = 
+  <>
+    <div className={style.boardTitle}>{`Board: ${0}`}</div>
+    <div className={style.board}>
+      <div
+        className={style.tiles}
+        style={{ gridTemplateColumns: `repeat(${5}, 1fr)` }}
+      >
+        {[...Array(5  * 5)].map((key, index) => (
+          <DisplayTile
+            key={`tile-${index}`}
+            id={index}
+            isSelected={moves.includes(index)}
+            player={findPlayer(index) }
+            text={moves.indexOf(index)}
+          />
+        ))}
+      </div>
     </div>
-  </div>
-</>
+  </>
+
 
   return (
     <div className={style.container}>
@@ -77,7 +70,12 @@ const boardDiv =
       </Button>
 
         {boardDiv}
-
+      <div className={style.rules}>
+        <h3> How to Play: </h3>
+        <p>Click a tile on your turn to choose that tile. </p>
+        <p>Each player takes their turn selecting a tile</p>
+        <p>When there are five of the same coloured tiles in a row that player wins</p>
+      </div>
 
     </div>
   );
