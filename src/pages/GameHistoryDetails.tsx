@@ -1,24 +1,25 @@
-import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useLocalStorage } from "../hooks";
 import { boardInfo } from "../types";
-import {  DisplayTile } from "../components";
+import {  Button, DisplayTile } from "../components";
 import style from "./GameHistoryDetails.module.css";
 
 export default function GameHistoryDetails() {
   const { boardId } = useParams();
-  const [idCheck, setIdCheck] = useState(boardId?.split(":")[1]);
+  const navigate = useNavigate();
   const [boards] = useLocalStorage<Record<string, boardInfo>>(`boards`, {});
+
+  
 
   const boardIdentifier = boardId?.split(":")[1]
   
-  const { size, date, winner, moves} = boards[`board-${boardIdentifier}`]
+  const { size, winner, moves} = boards[`board-${boardIdentifier}`]
 
   const tempSize = size || 15
 
   function tileColor(index: number){
     const tileIndex = moves.indexOf(index)
-    if (moves.includes(index) && tileIndex % 2 == 1) return 'White'
+    if (moves.includes(index) && tileIndex % 2 === 1) return 'White'
     else return 'Black' 
   }
 
@@ -41,6 +42,7 @@ export default function GameHistoryDetails() {
           ))}
         </div>
       </div>
+      <Button onClick={() => {navigate("/gameHistory")}}>Back</Button>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export default function GameHistory() {
   return (
     <div className={style.container}>
       {Object.keys(boards).map((key, arr) => {
-        const { size, date, winner, moves} = boards[key]
+        const { size, date, winner} = boards[key]
           const sessionId = key.split("-")[1];
           if (size === 0) return null;
 

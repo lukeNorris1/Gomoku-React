@@ -1,10 +1,10 @@
 import { useState, useContext } from "react";
-//useReducer
-//import { useLocalStorage } from '../hooks'
-import style from "./Home.module.css";
-import { useNavigate, Navigate } from "react-router-dom";
-//Navigate, Link, useLocation
+import { useNavigate } from "react-router-dom";
 import { UserContext, BoardContext } from "../context";
+import { Button, DisplayTile } from "../components";
+import { useLocalStorage } from "../hooks";
+import { boardInfo } from "../types";
+import style from "./Home.module.css";
 
 export default function Home() {
   console.log("load Home");
@@ -12,9 +12,13 @@ export default function Home() {
   const { changeBoard } = useContext(BoardContext);
   const [boardSize, setBoardSize] = useState(5);
   const navigate = useNavigate();
-  console.log(`user: ${user?.username}`);
+  
+  const [boards] = useLocalStorage<Record<string, boardInfo>>(`boards`, {});
 
-  console.log(user?.username || "no username");
+  
+  const randomBoard = Object.keys(boards).at(getRandomArbitrary(1,Object.keys(boards).length))
+  const { size, moves} = boards[`${randomBoard}`]
+  const tempSize = size || 12
 
   function startPress() {
     if (!user) navigate("/login");
@@ -23,6 +27,37 @@ export default function Home() {
       navigate(`/game`);
     }
   }
+
+  function getRandomArbitrary(min:number, max:number) {
+    return Math.random() * (max - min) + min;
+}
+
+function tileColor(index: number){
+  const tileIndex = moves.indexOf(index)
+  if (moves.includes(index) && tileIndex % 2 === 1) return 'White'
+  else return 'Black' 
+}
+
+const boardDiv = 
+<>
+  <div className={style.boardTitle}>{`Board: ${randomBoard}`}</div>
+  <div className={style.board}>
+    <div
+      className={style.seats}
+      style={{ gridTemplateColumns: `repeat(${tempSize}, 1fr)` }}
+    >
+      {[...Array(tempSize  * tempSize)].map((key, index) => (
+        <DisplayTile
+          key={`seat-${index}`}
+          id={index}
+          isSelected={moves.includes(index)}
+          player={tileColor(index)}
+          text={moves.indexOf(index)}
+        />
+      ))}
+    </div>
+  </div>
+</>
 
   return (
     <div className={style.container}>
@@ -38,9 +73,13 @@ export default function Home() {
           }`}</option>
         ))}
       </select>
-      <button key={1} onClick={startPress}>
+      <Button key={1} onClick={startPress}>
         Start
-      </button>
+      </Button>
+
+        {boardDiv}
+
+
     </div>
   );
 }

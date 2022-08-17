@@ -21,6 +21,7 @@
     padding: 0.5rem;
     background-color: #fb723b;
     border-radius: 20px;
+    margin-bottom: 2rem;
   }
   
   .seats {
@@ -53,5 +54,6 @@
     perspective: 500px;
   }
 
+ 
   
   
