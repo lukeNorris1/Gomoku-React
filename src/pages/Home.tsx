@@ -7,7 +7,6 @@ import { boardInfo } from "../types";
 import style from "./Home.module.css";
 
 export default function Home() {
-  console.log("load Home");
   const { user } = useContext(UserContext);
   const { changeBoard } = useContext(BoardContext);
   const [boardSize, setBoardSize] = useState(5);
@@ -43,12 +42,12 @@ const boardDiv =
   <div className={style.boardTitle}>{`Board: ${randomBoard}`}</div>
   <div className={style.board}>
     <div
-      className={style.seats}
+      className={style.tiles}
       style={{ gridTemplateColumns: `repeat(${tempSize}, 1fr)` }}
     >
       {[...Array(tempSize  * tempSize)].map((key, index) => (
         <DisplayTile
-          key={`seat-${index}`}
+          key={`tile-${index}`}
           id={index}
           isSelected={moves.includes(index)}
           player={tileColor(index)}

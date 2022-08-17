@@ -34,7 +34,6 @@ export default memo(function Tile(props: TileProps) {
   
 
   const handleClick = () => {
-    console.log(player);
     if (!isSelected) {
       if (status === TILE_STATUS.AVAILABLE && player === "Black") {
         setStatus(TILE_STATUS.BLACK);

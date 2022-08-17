@@ -28,12 +28,12 @@ export default function GameHistoryDetails() {
       <div className={style.turn}>{`Winner: ${winner}`}</div>
       <div className={style.board}>
         <div
-          className={style.seats}
+          className={style.tiles}
           style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
         >
           {[...Array(tempSize  * tempSize)].map((key, index) => (
             <DisplayTile
-              key={`seat-${index}`}
+              key={`tile-${index}`}
               id={index}
               isSelected={moves.includes(index)}
               player={tileColor(index)}

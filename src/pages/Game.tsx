@@ -26,8 +26,6 @@ function boardReducer(state: boardInfo, action: BoardAction) {
       return { size: size, date: payload, winner: winner, moves: moves}
     case BoardActionType.WINNER:
       return { size: size, date: date, winner: payload, moves: moves}
-    case BoardActionType.DESELECT:
-      return {size: size, date: date, winner: payload, moves: moves.filter((seat) => seat !== payload)}
     default:
       return state;
   }
@@ -56,10 +54,12 @@ export default function Game() {
     `boards`,
     {}
   );
+  // eslint-disable-next-line
   const {[`board-${boardAddition}`]: selectedTiles = {}, currentBoard = { size: 0, date: "", winner: "", moves: [] }, ...otherBoards } = boards;
 
   const [state, dispatch] = useReducer(boardReducer, currentBoard);
 
+  
   useEffect(() => {
       setBoardAddition(Object.keys(boards).length);
       if (board?.boardSize) {
@@ -156,13 +156,13 @@ export default function Game() {
       <div className={style.turn}>{playerMessage}</div>
       <div className={style.board}>
         <div
-          className={style.seats}
+          className={style.tiles}
           onClick={togglePlayer}
           style={{ gridTemplateColumns: `repeat(${localBoardSize}, 1fr)` }}
         >
           {[...Array(localBoardSize * localBoardSize)].map((_, index) => (
             <Tile
-              key={`seat-${index}`}
+              key={`tile-${index}`}
               id={index}
               isSelected={currentBoard.moves.includes(index)}
               dispatch={dispatch}
