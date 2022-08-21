@@ -25,10 +25,11 @@ const getClassNames = (status: TILE_STATUS) => {
 };
 
 export default memo(function Tile(props: TileProps) {
-  const { id, isSelected = false, player, text, dispatch} = props;
+  const { id, isSelected = false, player, dispatch} = props;
   const [status, setStatus] = useState(
     isSelected ? TILE_STATUS.SELECTED : TILE_STATUS.AVAILABLE
   );
+
 
 
   
@@ -42,12 +43,15 @@ export default memo(function Tile(props: TileProps) {
         setStatus(TILE_STATUS.WHITE);
         dispatch({ type: BoardActionType.SELECT, payload: id });
       }
-    }
+    } else dispatch({ type: BoardActionType.EMPTY, payload: id });
+    
   };
+
+
 
   return (
     <div className={getClassNames(status)} onClick={handleClick}>
-      {text}
+      {}
     </div>
   );
 });

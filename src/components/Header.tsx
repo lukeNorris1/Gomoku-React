@@ -13,31 +13,19 @@ export default function Header() {
 
   const getActions = () => {
     if (!user) {
-      return location.pathname === "/" ? (
-        <>
+      return (
           <button className={style.action} onClick={() => navigate("login")}>
             Login
           </button>
-          <button
-            className={style.action}
-            onClick={() => navigate("gameHistory")}
-          >
-            Previous Games
-          </button>
-        </>
-      ) : (
-        <></>
-      );
+      )
     } else if (location.pathname === "/") {
       return (
-        <>
           <button
             className={style.action}
             onClick={() => navigate("gameHistory")}
           >
             Previous Games
           </button>
-        </>
       );
     }
   };

@@ -5,7 +5,6 @@ import { Button, DisplayTile } from "../components";
 import style from "./Home.module.css";
 
 export default function Home() {
-  console.log("load Home");
   const { user } = useContext(UserContext);
   const { changeBoard } = useContext(BoardContext);
   const [boardSize, setBoardSize] = useState(5);
@@ -24,14 +23,13 @@ export default function Home() {
   const moves = [1,2,10,15,24,17,5,13,9,21]
 
   function findPlayer(index:number){
-    if (moves.indexOf(index) % 2 == 1) return 'White'
+    if (moves.indexOf(index) % 2 === 1) return 'White'
     else return 'Black'
   
   }
   
   const boardDiv = 
   <>
-    <div className={style.boardTitle}>{`Board: ${0}`}</div>
     <div className={style.board}>
       <div
         className={style.tiles}
@@ -69,7 +67,8 @@ export default function Home() {
         Start
       </Button>
 
-        {boardDiv}
+      {boardDiv}
+
       <div className={style.rules}>
         <h3> How to Play: </h3>
         <p>Click a tile on your turn to choose that tile. </p>

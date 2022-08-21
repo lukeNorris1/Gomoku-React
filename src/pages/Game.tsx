@@ -26,6 +26,8 @@ function boardReducer(state: boardInfo, action: BoardAction) {
       return { size: size, date: payload, winner: winner, moves: moves}
     case BoardActionType.WINNER:
       return { size: size, date: date, winner: payload, moves: moves}
+      case BoardActionType.EMPTY:
+      return { size: size, date: date, winner: winner, moves: []}
     default:
       return state;
   }
@@ -58,6 +60,7 @@ export default function Game() {
   const {[`board-${boardAddition}`]: selectedTiles = {}, currentBoard = { size: 0, date: "", winner: "", moves: [] }, ...otherBoards } = boards;
 
   const [state, dispatch] = useReducer(boardReducer, currentBoard);
+  
 
   
   useEffect(() => {
@@ -82,8 +85,9 @@ export default function Game() {
 
   //! Currently not working properly
   const restartClick = () => {
-    saveBoards(otherBoards);
+    console.log(`Current: ${state.moves}`)
     dispatch({ type: BoardActionType.EMPTY, payload: '' })
+    console.log(`Current: ${state.moves}`)
   };
 
   function leaveButton() {
@@ -164,7 +168,7 @@ export default function Game() {
             <Tile
               key={`tile-${index}`}
               id={index}
-              isSelected={currentBoard.moves.includes(index)}
+              isSelected={state.moves.includes(index)}
               dispatch={dispatch}
               player={player}
             />
