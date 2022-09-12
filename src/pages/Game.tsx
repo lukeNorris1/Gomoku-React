@@ -3,7 +3,7 @@ import {Navigate, useNavigate } from "react-router-dom";
 import { BoardContext, UserContext } from "../context";
 import { Tile } from "../components";
 import { useLocalStorage } from "../hooks";
-import { BoardActionType } from "../constants";
+import { BoardActionType, TILE_STATUS } from "../constants";
 import { boardInfo } from "../types";
 import style from "./Game.module.css";
 
@@ -85,9 +85,7 @@ export default function Game() {
 
   //! Currently not working properly
   const restartClick = () => {
-    console.log(`Current: ${state.moves}`)
     dispatch({ type: BoardActionType.EMPTY, payload: '' })
-    console.log(`Current: ${state.moves}`)
   };
 
   function leaveButton() {
@@ -148,9 +146,23 @@ export default function Game() {
     }
   }
 
+
+
   const togglePlayer = () => {
     if (!gameEnd) player === "Black" ? setPlayer("White") : setPlayer("Black");    
   };
+
+  function getStoneStatusAndMoveOrder(index: number
+    ) {
+      const order = state.moves.findIndex((e) => e === index)
+      const status =
+        order === -1
+          ? TILE_STATUS.AVAILABLE
+          : order % 2
+          ? TILE_STATUS.BLACK
+          : TILE_STATUS.WHITE
+      return { order, status }
+        }
 
 
   if (!user) return <Navigate to="/" replace />;
@@ -169,6 +181,7 @@ export default function Game() {
               key={`tile-${index}`}
               id={index}
               isSelected={state.moves.includes(index)}
+              {...getStoneStatusAndMoveOrder(index)}
               dispatch={dispatch}
               player={player}
             />

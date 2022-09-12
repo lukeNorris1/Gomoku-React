@@ -6,10 +6,12 @@ import style from "./Tile.module.css";
 
 type TileProps = {
   id: number;
-  isSelected?: boolean;
-  dispatch: React.Dispatch<BoardAction>;
-  player?: string;
-  text?: string;
+  isSelected?: boolean
+  dispatch: React.Dispatch<BoardAction>
+  player?: string
+  status: TILE_STATUS
+  order: number
+  text?: string
 };
 
 const getClassNames = (status: TILE_STATUS) => {
@@ -24,30 +26,29 @@ const getClassNames = (status: TILE_STATUS) => {
   }
 };
 
-export default memo(function Tile(props: TileProps) {
-  const { id, isSelected = false, player, dispatch} = props;
-  const [status, setStatus] = useState(
-    isSelected ? TILE_STATUS.SELECTED : TILE_STATUS.AVAILABLE
-  );
+export default memo(function Tile({
+  id,
+  isSelected = false,
+  player,
+  dispatch,
+  status,
+  order,
+}: TileProps) {
+  if (status === TILE_STATUS.BLACK || status === TILE_STATUS.WHITE) isSelected = true
 
-
-
-  
+  console.log(`Tile ${id}'s Status: ${status}`);
 
   const handleClick = () => {
     if (!isSelected) {
       if (status === TILE_STATUS.AVAILABLE && player === "Black") {
-        setStatus(TILE_STATUS.BLACK);
+        status = TILE_STATUS.BLACK
         dispatch({ type: BoardActionType.SELECT, payload: id });
       } else if (status === TILE_STATUS.AVAILABLE && player === "White") {
-        setStatus(TILE_STATUS.WHITE);
+        status = TILE_STATUS.WHITE
         dispatch({ type: BoardActionType.SELECT, payload: id });
       }
     } else dispatch({ type: BoardActionType.EMPTY, payload: id });
-    
   };
-
-
 
   return (
     <div className={getClassNames(status)} onClick={handleClick}>
