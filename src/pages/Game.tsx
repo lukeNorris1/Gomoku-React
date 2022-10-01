@@ -159,8 +159,8 @@ export default function Game() {
         order === -1
           ? TILE_STATUS.AVAILABLE
           : order % 2
-          ? TILE_STATUS.BLACK
-          : TILE_STATUS.WHITE
+          ? TILE_STATUS.WHITE
+          : TILE_STATUS.BLACK
       return { order, status }
         }
 
